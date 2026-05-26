@@ -1,15 +1,15 @@
 'use client'
 import { useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import PropertyForm from '@/components/PropertyForm'
 
 export default function AddProperty() {
   const router = useRouter()
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) router.push('/admin/login')
-    })
+    if (typeof window !== 'undefined') {
+      const isAdmin = localStorage.getItem('navigui_admin')
+      if (!isAdmin) router.push('/admin/login')
+    }
   }, [])
 
   return (
