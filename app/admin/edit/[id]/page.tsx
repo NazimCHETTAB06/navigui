@@ -10,10 +10,11 @@ export default function EditProperty({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { router.push('/admin/login'); return }
-      loadProperty()
-    })
+    if (typeof window !== 'undefined') {
+      const isAdmin = localStorage.getItem('navigui_admin')
+      if (!isAdmin) { router.push('/admin/login'); return }
+    }
+    loadProperty()
   }, [])
 
   async function loadProperty() {
