@@ -1,24 +1,29 @@
 'use client'
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
+// Identifiants admin simples - pas besoin de Supabase Auth
+const ADMIN_PHONE = '0664864918'
+const ADMIN_PASSWORD = 'nazim06'
+
 export default function AdminLogin() {
-  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  async function handleLogin(e: React.FormEvent) {
+  function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError('Email ou mot de passe incorrect')
-    } else {
+
+    if (phone === ADMIN_PHONE && password === ADMIN_PASSWORD) {
+      // Sauvegarder la session dans localStorage
+      localStorage.setItem('navigui_admin', 'true')
       router.push('/admin')
+    } else {
+      setError('Téléphone ou mot de passe incorrect')
     }
     setLoading(false)
   }
@@ -41,12 +46,26 @@ export default function AdminLogin() {
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label className="form-label">Email</label>
-            <input className="form-input" type="email" placeholder="admin@navigui.com" value={email} onChange={e => setEmail(e.target.value)} required />
+            <label className="form-label">Téléphone</label>
+            <input
+              className="form-input"
+              type="tel"
+              placeholder="0664864918"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Mot de passe</label>
-            <input className="form-input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+            <input
+              className="form-input"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
           </div>
           <button className="btn-primary" type="submit" disabled={loading}>
             {loading ? 'Connexion...' : 'Se connecter'}
