@@ -1,14 +1,11 @@
 'use client'
 import { useState } from 'react'
 import { supabase, getSupabaseConfigError } from '@/lib/supabase'
+import { resolveLoginEmail, formatAuthError } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
 
-const ADMIN_PHONE = '0664864918'
-const ADMIN_PASSWORD = 'nazim06'
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@navigui.com'
-
 export default function AdminLogin() {
-  const [phone, setPhone] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,12 +16,6 @@ export default function AdminLogin() {
     setLoading(true)
     setError('')
 
-    if (phone.replace(/\D/g, '') !== ADMIN_PHONE.replace(/\D/g, '') || password !== ADMIN_PASSWORD) {
-      setError('Téléphone ou mot de passe incorrect')
-      setLoading(false)
-      return
-    }
-
     const configErr = getSupabaseConfigError()
     if (configErr) {
       setError(configErr)
@@ -32,20 +23,21 @@ export default function AdminLogin() {
       return
     }
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: ADMIN_EMAIL,
-      password,
-    })
-
-    if (authError) {
-      setError(
-        'Compte Supabase introuvable. Créez un utilisateur admin@navigui.com dans Supabase → Authentication, avec le même mot de passe.',
-      )
+    const email = resolveLoginEmail(identifier)
+    if (!email.includes('@')) {
+      setError('Entrez votre email (ex. admin@navigui.com) ou le téléphone 0664864918.')
       setLoading(false)
       return
     }
 
-    localStorage.setItem('navigui_admin', 'true')
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (authError) {
+      setError(formatAuthError(authError.message))
+      setLoading(false)
+      return
+    }
+
     router.push('/admin')
     setLoading(false)
   }
@@ -68,13 +60,14 @@ export default function AdminLogin() {
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label className="form-label">Téléphone</label>
+            <label className="form-label">Email ou téléphone</label>
             <input
               className="form-input"
-              type="tel"
-              placeholder="0664864918"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
+              type="text"
+              placeholder="admin@navigui.com"
+              value={identifier}
+              onChange={e => setIdentifier(e.target.value)}
+              autoComplete="username"
               required
             />
           </div>
@@ -83,9 +76,10 @@ export default function AdminLogin() {
             <input
               className="form-input"
               type="password"
-              placeholder="••••••••"
+              placeholder="Mot de passe Supabase"
               value={password}
               onChange={e => setPassword(e.target.value)}
+              autoComplete="current-password"
               required
             />
           </div>
@@ -93,6 +87,10 @@ export default function AdminLogin() {
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
+
+        <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 14, lineHeight: 1.45 }}>
+          Utilisez le compte créé dans Supabase → Authentication (ex. admin@navigui.com ou n_chettab@estin.dz).
+        </p>
       </div>
 
       <p style={{ textAlign: 'center', marginTop: 20, fontSize: 13, color: 'var(--text-secondary)' }}>

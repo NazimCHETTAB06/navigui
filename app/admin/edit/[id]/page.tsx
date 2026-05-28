@@ -1,6 +1,7 @@
 'use client'
 import { use, useEffect, useState } from 'react'
 import { supabase, Property } from '@/lib/supabase'
+import { getAdminSession } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
 import PropertyForm from '@/components/PropertyForm'
 
@@ -11,22 +12,16 @@ export default function EditProperty({ params }: { params: Promise<{ id: string 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function check() {
-      const isAdmin = localStorage.getItem('navigui_admin')
-      if (!isAdmin) {
-        router.push('/admin/login')
-        return
-      }
-      const { data: { session } } = await supabase.auth.getSession()
+    getAdminSession().then(session => {
       if (!session) {
         router.push('/admin/login')
         return
       }
-      const { data } = await supabase.from('properties').select('*').eq('id', id).single()
-      setProperty(data)
-      setLoading(false)
-    }
-    check()
+      supabase.from('properties').select('*').eq('id', id).single().then(({ data }) => {
+        setProperty(data)
+        setLoading(false)
+      })
+    })
   }, [id, router])
 
   return (

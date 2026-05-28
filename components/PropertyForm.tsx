@@ -118,7 +118,7 @@ export default function PropertyForm({ initial, propertyId }: { initial?: Partia
 
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
-      setError('Vous devez être connecté. Allez sur /admin/login.')
+      setError('Session expirée. Reconnectez-vous sur /admin/login avec votre email Supabase.')
       setSaving(false)
       return
     }

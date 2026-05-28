@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase, Property } from '@/lib/supabase'
+import { getAdminSession } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
 
 export default function AdminDashboard() {
@@ -10,22 +11,14 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    async function check() {
-      const isAdmin = localStorage.getItem('navigui_admin')
-      if (!isAdmin) {
-        router.replace('/admin/login')
-        return
-      }
-      const { data: { session } } = await supabase.auth.getSession()
+    getAdminSession().then(session => {
       if (!session) {
-        localStorage.removeItem('navigui_admin')
         router.replace('/admin/login')
         return
       }
       setChecking(false)
       loadProperties()
-    }
-    check()
+    })
   }, [router])
 
   async function loadProperties() {
@@ -41,12 +34,10 @@ export default function AdminDashboard() {
   }
 
   async function logout() {
-    localStorage.removeItem('navigui_admin')
     await supabase.auth.signOut()
     router.replace('/')
   }
 
-  // Afficher rien pendant la vérification
   if (checking) {
     return (
       <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gray-bg)' }}>
@@ -59,7 +50,7 @@ export default function AdminDashboard() {
     <div style={{ minHeight: '100dvh', background: 'var(--gray-bg)', paddingBottom: 20 }}>
       <header className="top-header">
         <span className="logo">navigui admin</span>
-        <button onClick={logout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 500 }}>
+        <button type="button" onClick={logout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 500 }}>
           Déconnexion
         </button>
       </header>
@@ -80,9 +71,8 @@ export default function AdminDashboard() {
           <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-secondary)' }}>Chargement...</div>
         ) : properties.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-secondary)' }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{ marginBottom: 12, opacity: 0.4 }}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
             <p style={{ fontSize: 16, marginBottom: 16 }}>Aucun appartement publié</p>
-            <a href="/admin/add" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--blue)', color: 'white', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+            <a href="/admin/add" className="btn-primary" style={{ display: 'inline-flex', width: 'auto', padding: '12px 24px', textDecoration: 'none' }}>
               Publier votre premier appartement
             </a>
           </div>
@@ -101,11 +91,11 @@ export default function AdminDashboard() {
                   <div className="admin-card-price">{p.price_per_night?.toLocaleString('fr-DZ')} DA<span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-secondary)' }}>/nuit</span></div>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button className="btn-edit" style={{ flex: 1 }} onClick={() => router.push(`/admin/edit/${p.id}`)}>
-                    ✏️ Modifier
+                  <button type="button" className="btn-edit" style={{ flex: 1 }} onClick={() => router.push(`/admin/edit/${p.id}`)}>
+                    Modifier
                   </button>
-                  <button className="btn-delete" style={{ flex: 1 }} onClick={() => deleteProperty(p.id)}>
-                    🗑️ Supprimer
+                  <button type="button" className="btn-delete" style={{ flex: 1 }} onClick={() => deleteProperty(p.id)}>
+                    Supprimer
                   </button>
                 </div>
               </div>
