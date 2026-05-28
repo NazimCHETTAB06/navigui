@@ -15,11 +15,14 @@ export function resolveLoginEmail(identifier: string): string {
 }
 
 export function formatAuthError(message: string): string {
+  if (message.includes('Invalid path specified') || message.includes('requested path is invalid')) {
+    return 'URL Supabase invalide sur Vercel. Project Settings → API → copiez « Project URL » exactement (ex. https://dcponrhichuvjcbnlojp.supabase.co), sans guillemets ni /auth/v1, puis Redeploy.'
+  }
   if (message.includes('Invalid login credentials')) {
-    return 'Email ou mot de passe incorrect. Utilisez le mot de passe défini dans Supabase → Authentication.'
+    return 'Email ou mot de passe incorrect. Utilisez le mot de passe défini dans Supabase → Authentication → Users.'
   }
   if (message.includes('Email not confirmed')) {
-    return 'Email non confirmé. Dans Supabase → Authentication → Users, confirmez l’utilisateur ou désactivez la confirmation email.'
+    return 'Email non confirmé. Dans Supabase → Users, confirmez l’utilisateur ou désactivez « Confirm email ».'
   }
   return message
 }
