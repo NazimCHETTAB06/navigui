@@ -22,16 +22,12 @@ export default function EditProperty({ params }: { params: Promise<{ id: string 
         router.push('/admin/login')
         return
       }
-      loadProperty()
+      const { data } = await supabase.from('properties').select('*').eq('id', id).single()
+      setProperty(data)
+      setLoading(false)
     }
     check()
   }, [id, router])
-
-  async function loadProperty() {
-    const { data } = await supabase.from('properties').select('*').eq('id', id).single()
-    setProperty(data)
-    setLoading(false)
-  }
 
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--gray-bg)' }}>
