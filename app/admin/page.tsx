@@ -10,14 +10,23 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem('navigui_admin')
-    if (!isAdmin) {
-      router.replace('/admin/login')
-      return
+    async function check() {
+      const isAdmin = localStorage.getItem('navigui_admin')
+      if (!isAdmin) {
+        router.replace('/admin/login')
+        return
+      }
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        localStorage.removeItem('navigui_admin')
+        router.replace('/admin/login')
+        return
+      }
+      setChecking(false)
+      loadProperties()
     }
-    setChecking(false)
-    loadProperties()
-  }, [])
+    check()
+  }, [router])
 
   async function loadProperties() {
     const { data } = await supabase.from('properties').select('*').order('created_at', { ascending: false })
@@ -31,8 +40,9 @@ export default function AdminDashboard() {
     setProperties(prev => prev.filter(p => p.id !== id))
   }
 
-  function logout() {
+  async function logout() {
     localStorage.removeItem('navigui_admin')
+    await supabase.auth.signOut()
     router.replace('/')
   }
 

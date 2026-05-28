@@ -1,10 +1,11 @@
 'use client'
 import { useState } from 'react'
+import { supabase, getSupabaseConfigError } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
-// Identifiants admin simples - pas besoin de Supabase Auth
 const ADMIN_PHONE = '0664864918'
 const ADMIN_PASSWORD = 'nazim06'
+const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@navigui.com'
 
 export default function AdminLogin() {
   const [phone, setPhone] = useState('')
@@ -13,18 +14,39 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    if (phone === ADMIN_PHONE && password === ADMIN_PASSWORD) {
-      // Sauvegarder la session dans localStorage
-      localStorage.setItem('navigui_admin', 'true')
-      router.push('/admin')
-    } else {
+    if (phone.replace(/\D/g, '') !== ADMIN_PHONE.replace(/\D/g, '') || password !== ADMIN_PASSWORD) {
       setError('Téléphone ou mot de passe incorrect')
+      setLoading(false)
+      return
     }
+
+    const configErr = getSupabaseConfigError()
+    if (configErr) {
+      setError(configErr)
+      setLoading(false)
+      return
+    }
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: ADMIN_EMAIL,
+      password,
+    })
+
+    if (authError) {
+      setError(
+        'Compte Supabase introuvable. Créez un utilisateur admin@navigui.com dans Supabase → Authentication, avec le même mot de passe.',
+      )
+      setLoading(false)
+      return
+    }
+
+    localStorage.setItem('navigui_admin', 'true')
+    router.push('/admin')
     setLoading(false)
   }
 

@@ -58,9 +58,7 @@ CREATE POLICY "Admin image delete" ON storage.objects
 
 -- ============================================================
 -- APRÈS avoir exécuté ce script :
--- 1. Aller dans Supabase > Authentication > Users
--- 2. Cliquer "Add User" (Invite User)
--- 3. Email : admin@navigui.com
--- 4. Password : nazim06
--- 5. Confirmer
+-- 1. Supabase > Authentication > Users > Add user
+-- 2. Créer un compte admin (email + mot de passe fort)
+-- 3. Vercel : ajouter NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY
 -- ============================================================
