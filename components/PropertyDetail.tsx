@@ -4,12 +4,10 @@ import { Property } from '@/lib/supabase'
 import { MAP_URL } from '@/lib/constants'
 import { optimizeImageUrl } from '@/lib/images'
 import ZoomableHero from '@/components/ZoomableHero'
-import PhotoStripModal from '@/components/PhotoStripModal'
 import OptimizedImage from '@/components/OptimizedImage'
 import { IconBed, IconBath, IconPeople, AmenityIcon } from '@/components/PropertyIcons'
 
 const FALLBACK = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=70'
-const VISIBLE_THUMBS = 4
 
 function formatPhone(phone: string) {
   const d = phone.replace(/\D/g, '')
@@ -29,9 +27,7 @@ export default function PropertyDetail({
   isActive?: boolean
 }) {
   const [imgIdx, setImgIdx] = useState(0)
-  const [stripOpen, setStripOpen] = useState(false)
   const imgs = p.images?.length ? p.images : [FALLBACK]
-  const extraCount = Math.max(0, imgs.length - VISIBLE_THUMBS)
 
   useEffect(() => {
     if (!isActive) return
@@ -65,17 +61,12 @@ export default function PropertyDetail({
         </div>
       </div>
 
-      <div className="detail-thumbs">
-        {imgs.slice(0, VISIBLE_THUMBS).map((src, i) => (
-          <button key={i} type="button" className={`detail-thumb ${imgIdx === i ? 'active' : ''}`} onClick={() => setImgIdx(i)}>
+      <div className="detail-thumbs-grid">
+        {imgs.map((src, i) => (
+          <button key={i} type="button" className={`detail-thumb-grid ${imgIdx === i ? 'active' : ''}`} onClick={() => setImgIdx(i)}>
             <OptimizedImage src={src} alt="" width={120} />
           </button>
         ))}
-        {extraCount > 0 && (
-          <button type="button" className="detail-thumb detail-thumb-more" onClick={() => setStripOpen(true)}>
-            +{extraCount}
-          </button>
-        )}
       </div>
 
       <div className="detail-body">
@@ -159,15 +150,6 @@ export default function PropertyDetail({
           </div>
         )}
       </div>
-
-      {stripOpen && (
-        <PhotoStripModal
-          images={imgs}
-          startIndex={VISIBLE_THUMBS}
-          onSelect={setImgIdx}
-          onClose={() => setStripOpen(false)}
-        />
-      )}
     </article>
   )
 }

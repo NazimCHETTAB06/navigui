@@ -55,6 +55,31 @@ const AMENITY_SVG: Record<string, ReactNode> = {
       <path d="M2 12h20" /><path d="M6 8v8M12 6v12M18 8v8" />
     </svg>
   ),
+  'Salle de gym': (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+      <line x1="6" y1="4" x2="6" y2="20" /><line x1="18" y1="4" x2="18" y2="20" /><polyline points="9 9 9 15 15 15 15 9" />
+    </svg>
+  ),
+  Jardin: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+      <path d="M12 2L9 8h6L12 2z" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="12" r="3" /><path d="M12 18v4M4 22h16" />
+    </svg>
+  ),
+  Barbecue: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+      <rect x="4" y="8" width="16" height="12" rx="2" /><line x1="8" y1="12" x2="8" y2="16" /><line x1="12" y1="12" x2="12" y2="16" /><line x1="16" y1="12" x2="16" y2="16" />
+    </svg>
+  ),
+  Chauffage: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+      <path d="M12 2v20M7 7c0-3 5-5 5-5s5 2 5 5M7 12c0-3 5-5 5-5s5 2 5 5M7 17c0-3 5-5 5-5s5 2 5 5" />
+    </svg>
+  ),
+  Ascenseur: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+      <rect x="4" y="2" width="16" height="20" rx="2" /><line x1="8" y1="6" x2="16" y2="6" /><path d="M12 10v8M10 14h4" />
+    </svg>
+  ),
 }
 
 export function AmenityIcon({ name }: { name: string }) {

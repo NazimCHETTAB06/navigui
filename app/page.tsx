@@ -66,23 +66,16 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          filtered.map((p, i) => {
-            const render = Math.abs(i - activeIdx) <= 1
-            return (
-              <section key={p.id} className="tiktok-slide">
-                {render ? (
-                  <PropertyDetail
-                    property={p}
-                    saved={savedIds.has(p.id)}
-                    onSave={() => handleSave(p.id)}
-                    isActive={i === activeIdx}
-                  />
-                ) : (
-                  <div className="tiktok-slide-placeholder" />
-                )}
-              </section>
-            )
-          })
+          filtered.map((p, i) => (
+            <section key={p.id} className="tiktok-slide">
+              <PropertyDetail
+                property={p}
+                saved={savedIds.has(p.id)}
+                onSave={() => handleSave(p.id)}
+                isActive={i === activeIdx}
+              />
+            </section>
+          ))
         )}
       </div>
 
