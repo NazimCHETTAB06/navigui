@@ -28,6 +28,7 @@ export default function PropertyDetail({
 }) {
   const [imgIdx, setImgIdx] = useState(0)
   const imgs = p.images?.length ? p.images : [FALLBACK]
+  const extraCount = Math.max(0, imgs.length - 5)
 
   useEffect(() => {
     if (!isActive) return
@@ -45,7 +46,7 @@ export default function PropertyDetail({
           <ZoomableHero src={imgs[imgIdx]} alt={p.title} priority={isActive && imgIdx === 0} />
           {p.verified && (
             <div className="detail-verified">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13">
                 <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
               Vérifié
@@ -62,11 +63,29 @@ export default function PropertyDetail({
       </div>
 
       <div className="detail-thumbs-grid">
-        {imgs.map((src, i) => (
+        {imgs.slice(0, 5).map((src, i) => (
           <button key={i} type="button" className={`detail-thumb-grid ${imgIdx === i ? 'active' : ''}`} onClick={() => setImgIdx(i)}>
             <OptimizedImage src={src} alt="" width={120} />
           </button>
         ))}
+        {extraCount > 0 && (
+          <div className="detail-thumb-grid" style={{ position: 'relative' }}>
+            <OptimizedImage src={imgs[5]} alt="" width={120} />
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: '700'
+            }}>
+              +{extraCount}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="detail-body">
