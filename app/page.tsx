@@ -21,12 +21,20 @@ export default function Home() {
   }, [])
 
   async function loadProperties() {
-    if (!isSupabaseConfigured()) return
+    if (!isSupabaseConfigured()) {
+      console.log('Supabase non configuré, utilisation de SAMPLE_PROPERTIES')
+      return
+    }
     const { data, error } = await supabase.from('properties').select('*').order('created_at', { ascending: false })
+    console.log('Propriétés chargées de Supabase:', data?.length, 'Error:', error)
     if (!error && data && data.length > 0) setProperties(data)
   }
 
   const filtered = filterProperties(properties, filters)
+
+  useEffect(() => {
+    console.log('Total propriétés:', properties.length, 'Filtrées:', filtered.length)
+  }, [properties, filtered.length])
 
   const updateActiveIndex = useCallback(() => {
     const el = containerRef.current
